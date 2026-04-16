@@ -21,15 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-bu)vpjtm=p%wa^)gytvv@n(h*aix2^ev1++-r7cgcjvw7!(r*t'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-bu)vpjtm=p%wa^)gytvv@n(h*aix2^ev1++-r7cgcjvw7!(r*t')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('RAILWAY_ENVIRONMENT') != 'production'
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*'] if DEBUG else [
-    os.getenv('RAILWAY_PUBLIC_DOMAIN', 'localhost'),
-    os.getenv('RAILWAY_PROJECT_DOMAIN', 'localhost'),
-]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -46,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -122,8 +120,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-import os
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
