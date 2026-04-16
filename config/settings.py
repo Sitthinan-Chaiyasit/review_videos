@@ -24,9 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-bu)vpjtm=p%wa^)gytvv@n(h*aix2^ev1++-r7cgcjvw7!(r*t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('VERCEL_ENV') != 'production'
+DEBUG = os.getenv('RAILWAY_ENVIRONMENT') != 'production'
 
-ALLOWED_HOSTS = ['*'] if DEBUG else [os.getenv('VERCEL_URL', 'localhost')]
+ALLOWED_HOSTS = ['*'] if DEBUG else [
+    os.getenv('RAILWAY_PUBLIC_DOMAIN', 'localhost'),
+    os.getenv('RAILWAY_PROJECT_DOMAIN', 'localhost'),
+]
 
 
 # Application definition
@@ -74,11 +77,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+    )
 }
 
 
@@ -116,7 +120,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 import os
 
