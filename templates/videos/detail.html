@@ -1,0 +1,59 @@
+{% extends 'videos/base.html' %}
+{% block title %}{{ video.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-wrap { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
+    .video-player {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .video-player video, .video-player iframe {
+        width: 100%; height: 100%; border: none;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .meta { color: rgba(255,255,255,0.4); font-size: 0.85rem; margin-bottom: 1rem; }
+    .desc { color: rgba(255,255,255,0.65); line-height: 1.8; }
+    .related-title { margin: 3rem 0 1rem; font-size: 1.1rem; color: rgba(255,255,255,0.5); }
+    .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-wrap">
+    <div class="video-player">
+        {% if embed_url %}
+            <iframe src="{{ embed_url }}" allowfullscreen></iframe>
+        {% elif video.video_file %}
+            <video controls src="{{ video.video_file.url }}"></video>
+        {% else %}
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:4rem">🎬</div>
+        {% endif %}
+    </div>
+    
+    <h1>{{ video.title }}</h1>
+    <p class="meta">{{ video.get_category_display }} · {{ video.created_at|date:"d M Y" }}</p>
+    <p class="desc">{{ video.description }}</p>
+    
+    {% if related %}
+    <p class="related-title">วิดีโอที่เกี่ยวข้อง</p>
+    <div class="related-grid">
+        {% for v in related %}
+        <a href="/video/{{ v.pk }}/" style="text-decoration:none;color:inherit">
+            {% if v.thumbnail %}
+                <img src="{{ v.thumbnail.url }}" alt="{{ v.title }}" 
+                     style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px">
+            {% else %}
+                <div style="width:100%;aspect-ratio:16/9;background:rgba(255,255,255,0.05);border-radius:8px;display:flex;align-items:center;justify-content:center">🎬</div>
+            {% endif %}
+            <p style="margin-top:0.5rem;font-size:0.9rem">{{ v.title }}</p>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
